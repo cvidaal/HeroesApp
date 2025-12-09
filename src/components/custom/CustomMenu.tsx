@@ -15,7 +15,7 @@ export function CustomMenu() {
   };
 
   return (
-    <NavigationMenu>
+    <NavigationMenu className="py-5">
       <NavigationMenuList className="flex gap-2">
         {/* Home */}
         <NavigationMenuItem>
