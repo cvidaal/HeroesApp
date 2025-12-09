@@ -6,13 +6,16 @@ import { HeroGrid } from "@/heroes/components/HeroGrid";
 import { TabsContent } from "@radix-ui/react-tabs";
 import { CustomPagination } from "@/components/custom/CustomPagination";
 import { CustomBreadcrumbs } from "@/components/custom/CustomBreadcrumbs";
-import { useMemo } from "react";
+import { use, useMemo } from "react";
 import { useHeroSummary } from "@/heroes/hooks/useHeroSummary";
 import { usePaginatedHero } from "@/heroes/hooks/usePaginatedHero";
+import { FavoriteHeroContext } from "@/heroes/context/FavoriteHeroContext";
 
 export const HomePage = () => {
   // Obtener los parametros de búsqueda de la URL ? page=2 etc
   const [searchParams, setSearchParams] = useSearchParams();
+
+  const { favorites, favoriteCount } = use(FavoriteHeroContext);
 
   //! SEARCH PARAMS
   // Obtenemos el tab de los parametros www.midominio.com?tab=favorites
@@ -74,7 +77,7 @@ export const HomePage = () => {
               }
               className="flex items-center gap-2"
             >
-              Favorites (3)
+              Favorites ({favoriteCount})
             </TabsTrigger>
             <TabsTrigger
               value="heroes"
@@ -111,7 +114,7 @@ export const HomePage = () => {
             <HeroGrid heroes={heroesResponse?.heroes ?? []} />
           </TabsContent>
           <TabsContent value="favorites">
-            <HeroGrid heroes={[]} />
+            <HeroGrid heroes={favorites} />
             {/* Mostrar todos los favoritos */}
           </TabsContent>
           <TabsContent value="heroes">
@@ -125,7 +128,9 @@ export const HomePage = () => {
         </Tabs>
 
         {/* Pagination */}
-        <CustomPagination totalPages={heroesResponse?.pages} />
+        {selectedTab !== "favorites" && (
+          <CustomPagination totalPages={heroesResponse?.pages} />
+        )}
       </>
     </>
   );
