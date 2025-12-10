@@ -21,7 +21,29 @@ export const FavoriteHeroContext = createContext({} as FavoriteHeroContext);
 
 const getFavoritesFromLocalStorage = (): Hero[] => {
   const favorites = localStorage.getItem("favorites");
-  return favorites ? JSON.parse(favorites) : [];
+  if (!favorites) return [];
+
+  try {
+    const parsed: Hero[] = JSON.parse(favorites);
+    const BASE_URL = import.meta.env.VITE_API_URL;
+
+    // Normalizar la propiedad `image` para que use el `VITE_API_URL` actual.
+    // Esto corrige favoritos guardados previamente que apuntaban al URL antiguo.
+    return parsed.map((h) => {
+      if (!h.image) return h;
+
+      // Si la imagen ya es una URL absoluta, extraer el filename
+      const parts = h.image.split("/");
+      const filename = parts.length ? parts[parts.length - 1] : h.image;
+
+      return {
+        ...h,
+        image: `${BASE_URL}/images/${filename}`,
+      };
+    });
+  } catch (error) {
+    return [];
+  }
 };
 
 // Provider
